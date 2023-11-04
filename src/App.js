@@ -1,11 +1,9 @@
-import MenuComponent from "./pages/Menu";
-import AdminTable from "./pages/AdminTable";
+import Main from "./pages/Main";
 
 const App = () => {
   return (
     <>
-      <MenuComponent />
-      <AdminTable />
+      <Main />
     </>
   );
 };

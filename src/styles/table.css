@@ -1,0 +1,23 @@
+.admin-table-form {
+  width: 100%;
+  min-height: 100vh;
+  margin-top: 45px;
+  padding: 0;
+}
+
+.editable-row {
+  height: 50px;
+}
+
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

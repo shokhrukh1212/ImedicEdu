@@ -3,7 +3,7 @@ import AddAdminForm from "./AddAdminForm";
 
 const PopupModal = ({ isModalOpen, setIsModalOpen }) => {
   const handleOk = () => {
-    setIsModalOpen(false);
+    //setIsModalOpen(false);
   };
   const handleCancel = () => {
     setIsModalOpen(false);

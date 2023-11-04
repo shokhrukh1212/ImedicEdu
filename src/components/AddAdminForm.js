@@ -31,6 +31,14 @@ const AddAdminForm = ({ handleCancel, handleOk }) => {
     handleOk();
   };
 
+  const validatePhone = (rule, value, callback) => {
+    if (value.toString().length !== 9) {
+      callback("Please, enter a valid phone number");
+    } else {
+      callback();
+    }
+  };
+
   return (
     <Form
       {...layout}
@@ -74,12 +82,12 @@ const AddAdminForm = ({ handleCancel, handleOk }) => {
         label="Phone number"
         rules={[
           {
-            type: "number",
             required: true,
+            validator: validatePhone,
           },
         ]}
       >
-        <Input />
+        <Input addonBefore={"+998"} />
       </Form.Item>
 
       {/* age */}
