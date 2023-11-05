@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Form,
   Input,
@@ -53,7 +53,7 @@ const EditableCell = ({
   );
 };
 
-const TableComponent = ({ size }) => {
+const TableComponent = ({ size, name }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState("");
@@ -62,33 +62,34 @@ const TableComponent = ({ size }) => {
 
   const isEditing = (record) => record.key === editingKey;
 
-  useEffect(() => {
+  // using a callback function to memoize a function and to get rid of 2 times loading which is because of React.StrictMode
+  const fetchUsers = useCallback(async () => {
     setIsLoading(true);
-    async function fetchUsers() {
-      const res = await fetch(
-        `https://random-data-api.com/api/v2/users?size=${size}`
-      );
-      const data = await res.json();
-      console.log("Data: ", data);
-      const readyData = [];
-      data.map((personData) => {
-        const personDateYear = new Date(personData.date_of_birth).getFullYear();
-        const currentYear = new Date().getFullYear();
-        readyData.push({
-          key: personData.id,
-          name: `${personData.first_name} ${personData.last_name}`,
-          phoneNumber: personData.phone_number,
-          email: personData.email,
-          age: currentYear - personDateYear,
-        });
+    const res = await fetch(
+      `https://random-data-api.com/api/v2/users?size=${size}`
+    );
+    const data = await res.json();
+    console.log("Data: ", data);
+    const readyData = [];
+    data.map((personData) => {
+      const personDateYear = new Date(personData.date_of_birth).getFullYear();
+      const currentYear = new Date().getFullYear();
+      readyData.push({
+        key: personData.id,
+        name: `${personData.first_name} ${personData.last_name}`,
+        phoneNumber: personData.phone_number,
+        email: personData.email,
+        age: currentYear - personDateYear,
       });
+    });
 
-      setData(readyData);
-      setIsLoading(false);
-    }
-
-    fetchUsers();
+    setData(readyData);
+    setIsLoading(false);
   }, [size]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   // Edit functionality
   const edit = (record) => {
@@ -131,6 +132,12 @@ const TableComponent = ({ size }) => {
     }
   };
 
+  // when user wants to delete
+  const handleDelete = (key) => {
+    const newData = data.filter((item) => item.key !== key);
+    setData(newData);
+  };
+
   // Open modal when I click add icon
   const handleClick = () => {
     setIsModalOpen(true);
@@ -148,6 +155,8 @@ const TableComponent = ({ size }) => {
       dataIndex: "age",
       width: "10%",
       editable: true,
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.age - b.age,
     },
     {
       title: "Phone number",
@@ -162,6 +171,7 @@ const TableComponent = ({ size }) => {
       editable: true,
     },
     {
+      title: "Edit",
       dataIndex: "operation",
       render: (_, record) => {
         const editable = isEditing(record);
@@ -188,6 +198,19 @@ const TableComponent = ({ size }) => {
           </Typography.Link>
         );
       },
+    },
+    {
+      title: "Delete",
+      dataIndex: "operation",
+      render: (_, record) =>
+        data.length >= 1 ? (
+          <Popconfirm
+            title="Sure to delete?"
+            onConfirm={() => handleDelete(record.key)}
+          >
+            <a>Delete</a>
+          </Popconfirm>
+        ) : null,
     },
   ];
 
@@ -237,7 +260,7 @@ const TableComponent = ({ size }) => {
           <FloatButton
             icon={<PlusOutlined />}
             type="primary"
-            tooltip={<div>Add new admin</div>}
+            tooltip={<div>{`Add new ${name}`}</div>}
             style={{ right: 45 }}
             onClick={handleClick}
           />
@@ -246,7 +269,12 @@ const TableComponent = ({ size }) => {
         <Spin size="large" className="spinner" />
       )}
 
-      <PopupModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <PopupModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        setData={setData}
+        name={name}
+      />
     </>
   );
 };

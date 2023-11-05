@@ -22,13 +22,25 @@ const validateMessages = {
 };
 /* eslint-enable no-template-curly-in-string */
 
-const onFinish = (values) => {
-  console.log(values);
-};
+const AddAdminForm = ({ handleCancel, handleOk, setData }) => {
+  const [form] = Form.useForm();
 
-const AddAdminForm = ({ handleCancel, handleOk }) => {
-  const handleSubmit = () => {
+  // once all necessary areas are filled
+  const onFinish = (values) => {
+    const { name, age, email, phone } = values.user;
+    setData((data) => [
+      {
+        key: name,
+        name,
+        age,
+        email,
+        phoneNumber: `+998 ${phone}`,
+      },
+      ...data,
+    ]);
+
     handleOk();
+    form.resetFields();
   };
 
   const validatePhone = (rule, value, callback) => {
@@ -42,7 +54,8 @@ const AddAdminForm = ({ handleCancel, handleOk }) => {
   return (
     <Form
       {...layout}
-      name="nest-messages"
+      name="admin"
+      form={form}
       onFinish={onFinish}
       style={{
         maxWidth: 600,
@@ -118,7 +131,7 @@ const AddAdminForm = ({ handleCancel, handleOk }) => {
         <Button style={{ marginRight: 10 }} onClick={handleCancel}>
           Cancel
         </Button>
-        <Button type="primary" htmlType="submit" onClick={handleSubmit}>
+        <Button type="primary" htmlType="submit">
           Submit
         </Button>
       </Form.Item>

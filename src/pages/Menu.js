@@ -4,9 +4,11 @@ import {
   UserOutlined,
   CalendarOutlined,
   SettingOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
 import { Menu, Switch } from "antd";
 import "../styles/menu.css";
+import { useNavigate } from "react-router-dom";
 
 function getItem(label, key, icon, children) {
   return {
@@ -17,25 +19,30 @@ function getItem(label, key, icon, children) {
   };
 }
 const items = [
+  getItem("Home", "0", <HomeOutlined />),
   getItem("Admin", "1", <UserOutlined />),
   getItem("Users", "2", <UsergroupAddOutlined />),
   getItem("Calendar", "3", <CalendarOutlined />),
   getItem("Settings", "4", <SettingOutlined />),
 ];
-const MenuComponent = ({ setIsAdminVisible }) => {
+const MenuComponent = () => {
   const [theme, setTheme] = useState("light");
   const changeTheme = (value) => {
     setTheme(value ? "dark" : "light");
   };
+  const navigate = useNavigate();
 
   function handleClick({ item, key, keyPath, domEvent }) {
-    console.log(key);
+    if (key === "0") {
+      navigate("/");
+    }
+
     if (key === "1") {
-      setIsAdminVisible(true);
+      navigate("/admin");
     }
 
     if (key === "2") {
-      setIsAdminVisible(false);
+      navigate("/user");
     }
   }
 
@@ -48,8 +55,9 @@ const MenuComponent = ({ setIsAdminVisible }) => {
         style={{
           width: 200,
           minHeight: "100vh",
+          fontFamily: "EB Garamond, serif",
+          fontSize: "1.3rem",
         }}
-        defaultSelectedKeys={["1"]}
         defaultOpenKeys={["sub1"]}
         theme={theme}
         items={items}
